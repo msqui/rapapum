@@ -6,7 +6,9 @@ import ru.rapapum.rest.RestMethods;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,18 +27,40 @@ public final class ActionFactory {
     }
 
     static final class ActionMap {
-        private static final List<ActionMapItem> actionMapItems = Arrays.asList(
-                new ActionMapItem("/recipes/?", new RecipesAction()),
-                new ActionMapItem("/recipes/(\\d+)/?", Arrays.asList("id"), new RecipeAction()),
-                new ActionMapItem("/recipes/new/?", new FormNewRecipeAction()),
-                new ActionMapItem("/recipes/(\\d+)/edit/?", Arrays.asList("id"), new FormEditRecipeAction()),
-                new ActionMapItem("/recipes/(\\d+)/delete/?", Arrays.asList("id"), new ConfirmDeleteRecipeAction())
-        );
+        private static final Map<String, ActionMapItem> actionMapItems = new HashMap<String, ActionMapItem>();
 
-        private ActionMap() {}
+        private ActionMap() {
+            // Index
+            actionMapItems.put("recipes",
+                    new ActionMapItem("/recipes/?",
+                            new RecipesAction()));
+
+            // Show
+            actionMapItems.put("recipe",
+                    new ActionMapItem("/recipes/(\\d+)/?",
+                            Arrays.asList("id"),
+                            new RecipeAction()));
+
+            // Create
+            actionMapItems.put("new_recipe",
+                    new ActionMapItem("/recipes/new/?",
+                            new FormNewRecipeAction()));
+
+            // Edit
+            actionMapItems.put("edit_recipe",
+                    new ActionMapItem("/recipes/(\\d+)/edit/?",
+                            Arrays.asList("id"),
+                            new FormEditRecipeAction()));
+
+            // Delete
+            actionMapItems.put("delete_recipe",
+                    new ActionMapItem("/recipes/(\\d+)/delete/?",
+                            Arrays.asList("id"),
+                            new ConfirmDeleteRecipeAction()));
+        }
 
         public static Action match(HttpServletRequest request) {
-            for (ActionMapItem item : actionMapItems) {
+            for (ActionMapItem item : actionMapItems.values()) {
                 if (item.match(request)) {
                     return item.getAction();
                 }

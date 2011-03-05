@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="AppEngine API">
+    <CLASSES>
+      <root url="file:///opt/appengine-java-sdk-1.4.2/lib/user" />
+      <root url="file:///opt/appengine-java-sdk-1.4.2/lib/shared" />
+      <root url="jar://$USER_HOME$/Downloads/objectify-2.2.3/objectify-2.2.3.jar!/" />
+      <root url="file:///opt/appengine-java-sdk-1.4.2/lib/tools/jsp" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file:///opt/appengine-java-sdk-1.4.2/lib/shared" recursive="false" />
+    <jarDirectory url="file:///opt/appengine-java-sdk-1.4.2/lib/tools/jsp" recursive="false" />
+    <jarDirectory url="file:///opt/appengine-java-sdk-1.4.2/lib/user" recursive="false" />
+  </library>
+</component>

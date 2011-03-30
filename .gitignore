@@ -1,0 +1,14 @@
+# Use glob syntax
+syntax:glob
+
+# Personal IDE settings
+.idea/workspace.xml
+
+# Build artifacts
+out
+
+# temp files
+tmp
+.DS_Store
+*.tmp
+*~

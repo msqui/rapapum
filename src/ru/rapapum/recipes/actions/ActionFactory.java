@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class ActionFactory {
+    private ActionFactory() {}
 
     public static Action dispatch(RestMethods method, HttpServletRequest request)
             throws ServletException {
@@ -24,6 +25,34 @@ public final class ActionFactory {
         }
         return action;
 
+    }
+
+    public static String actionUrl(String actionName) {
+        ActionMapItem am = ActionMap.get(actionName);
+        if (null == am) {
+            return null;
+        }
+        return am.getPattern().pattern();
+    }
+
+    public static String actionUrl(String actionName, List<String> parameters) {
+        ActionMapItem am = ActionMap.get(actionName);
+        if (null == am) {
+            return null;
+        }
+
+        Pattern pattern = am.getPattern();
+        Matcher matcher = pattern.matcher("");
+        if (matcher.groupCount() != parameters.size()) {
+            return null;
+        }
+
+        String res = pattern.pattern();
+        if (am.match(res)) {
+            return res;
+        } else {
+            return null;
+        }
     }
 
     static final class ActionMap {
@@ -59,6 +88,11 @@ public final class ActionFactory {
                             new ConfirmDeleteRecipeAction()));
         }
 
+        /**
+         * Dispatches request to action using url regexp
+         * @param request Request
+         * @return first matched Action or null
+         */
         public static Action match(HttpServletRequest request) {
             for (ActionMapItem item : actionMapItems.values()) {
                 if (item.match(request)) {
@@ -68,6 +102,9 @@ public final class ActionFactory {
             return null;
         }
 
+        public static ActionMapItem get(String actionName) {
+            return actionMapItems.get(actionName);
+        }
     }
 
     static final class ActionMapItem {
@@ -86,12 +123,22 @@ public final class ActionFactory {
             this.groupNames = groupNames;
         }
 
+        public Pattern getPattern() {
+            return pattern;
+        }
+
         public Action getAction() {
             return action;
         }
 
-        public boolean match(HttpServletRequest request) {
-            Matcher matcher = pattern.matcher(request.getRequestURI());
+        /**
+         * Returns if request matches this action
+         * @param string String to compare with
+         * @return true if matches and false otherwise
+         * @throws IllegalStateException if group count in regexp != group names count in groupNames
+         */
+        public boolean match(String string) throws IllegalStateException {
+            Matcher matcher = pattern.matcher(string);
             if (matcher.matches()) {
 
                 if (matcher.groupCount() > 0) {
@@ -107,6 +154,17 @@ public final class ActionFactory {
                 return true;
             }
             return false;
+
+        }
+
+        /**
+         * Overload of {@link #match(String)} to match against {@link HttpServletRequest} objects
+         * @param request Request
+         * @return If request url matches the regexp
+         * @throws IllegalStateException if group count in regexp != group names count in groupNames
+         */
+        public boolean match(HttpServletRequest request) throws IllegalStateException {
+            return match(request.getRequestURI());
         }
     }
 }
